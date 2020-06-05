@@ -2,16 +2,16 @@
 
 # check for dependencies
 echo "Checking for dependencies..."
-if type wget > /dev/null 2>&1; then
+if command -v wget > /dev/null; then
     downloader="wget -O"
-elif type curl > /dev/null 2>&1; then
+elif command -v curl > /dev/null; then
     downloader="curl -Lo"
 else
     echo "Dependencies not met, please install either wget or curl."
     exit 1
 fi
 
-if type unzip > /dev/null 2>&1; then
+if command -v unzip > /dev/null; then
     echo "Dependencies met."
 else
     echo "Dependencies not met, please install unzip."
@@ -35,12 +35,13 @@ $downloader ~/.local/share/cpma/temp/cpma-cnq3.zip "https://playmorepromode.com/
 echo "Downloading Quake 3 Patch Data..."
 case "$downloader" in
   wget*)
-    $downloader ~/.local/share/cpma/temp/q3-patch.zip "https://www.ioquake3.org/data/quake3-latest-pk3s.zip" --referer "https://ioquake3.org" > /dev/null 2>&1
+    set -- --referer 'https://ioquake3.org'
     ;;
   curl*)
-    $downloader ~/.local/share/cpma/temp/q3-patch.zip "https://www.ioquake3.org/data/quake3-latest-pk3s.zip" -H "Referer: https://ioquake3.org" > /dev/null 2>&1
+    set -- -H 'Referer: https://ioquake3.org'
     ;;
 esac
+$downloader ~/.local/share/cpma/temp/q3-patch.zip "https://www.ioquake3.org/data/quake3-latest-pk3s.zip" "$@" > /dev/null 2>&1
 echo "------------------------------"
 
 # extract all files to their desired locations
@@ -77,4 +78,4 @@ chmod +x ~/.local/share/applications/cpma.desktop
 # remove temp directory
 rm -rf ~/.local/share/cpma/temp/
 echo "Script completed successfully."
-echo "Copy pak0.pk3 to ~/.local/share/cpma/baseq3/"
+echo "Place pak0.pk3 in ~/.local/share/cpma/baseq3/"
