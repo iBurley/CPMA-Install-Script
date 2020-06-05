@@ -12,7 +12,7 @@ else
 fi
 
 if type unzip > /dev/null 2>&1; then
-    echo "All dependencies met."
+    echo "Dependencies met."
 else
     echo "Dependencies not met, please install unzip."
     exit 1
@@ -32,6 +32,15 @@ echo "Downloading Map Pack..."
 $downloader ~/.local/share/cpma/temp/cpma-maps.zip "https://cdn.playmorepromode.com/files/cpma-mappack-full.zip" > /dev/null 2>&1
 echo "Downloading CNQ3 Engine..."
 $downloader ~/.local/share/cpma/temp/cpma-cnq3.zip "https://playmorepromode.com/files/latest/cnq3" > /dev/null 2>&1
+echo "Downloading Quake 3 Patch Data..."
+case "$downloader" in
+  wget*)
+    $downloader ~/.local/share/cpma/temp/q3-patch.zip "https://www.ioquake3.org/data/quake3-latest-pk3s.zip" --referer "https://ioquake3.org" > /dev/null 2>&1
+    ;;
+  curl*)
+    $downloader ~/.local/share/cpma/temp/q3-patch.zip "https://www.ioquake3.org/data/quake3-latest-pk3s.zip" -H "Referer: https://ioquake3.org" > /dev/null 2>&1
+    ;;
+esac
 echo "------------------------------"
 
 # extract all files to their desired locations
@@ -41,6 +50,8 @@ echo "Extracting Map Pack..."
 unzip ~/.local/share/cpma/temp/cpma-maps.zip -d ~/.local/share/cpma/baseq3/ > /dev/null
 echo "Extracting CNQ3 Engine..."
 unzip ~/.local/share/cpma/temp/cpma-cnq3.zip cnq3-x64 -d ~/.local/share/cpma/ > /dev/null
+echo "Extracting Quake 3 Patch Data..."
+unzip -j ~/.local/share/cpma/temp/q3-patch.zip 'quake3-latest-pk3s/baseq3/*' -d ~/.local/share/cpma/baseq3 > /dev/null
 echo "------------------------------"
 
 # make the engine binary executable
@@ -66,3 +77,4 @@ chmod +x ~/.local/share/applications/cpma.desktop
 # remove temp directory
 rm -rf ~/.local/share/cpma/temp/
 echo "Script completed successfully."
+echo "Copy pak0.pk3 to ~/.local/share/cpma/baseq3/"
